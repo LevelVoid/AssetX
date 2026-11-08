@@ -1,0 +1,34 @@
+# Rust / Anchor
+target/
+.anchor/
+test-ledger/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# TypeScript
+dist/
+*.tsbuildinfo
+
+# Expo / React Native
+app/.expo/
+app/android/
+app/ios/
+app/dist/
+app/web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Misc
+.DS_Store
+*.log

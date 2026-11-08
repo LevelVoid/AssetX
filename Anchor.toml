@@ -1,0 +1,20 @@
+[toolchain]
+anchor_version = "1.2.2"
+solana_version = "4.1.2"
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.localnet]
+rwa_exchange = "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA"
+
+[programs.devnet]
+rwa_exchange = "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA"
+
+[provider]
+cluster = "devnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -t 1000000 tests/*.ts"
