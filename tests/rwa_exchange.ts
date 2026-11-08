@@ -55,6 +55,19 @@ async function chainNow(): Promise<number> {
   return (await connection.getBlockTime(slot)) ?? now();
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Advance the Surfpool clock (absolute milliseconds) to test time-dependent rules. */
+async function timeTravel(seconds: number): Promise<void> {
+  const current = await chainNow();
+  const response = await (connection as any)._rpcRequest("surfnet_timeTravel", [
+    { absoluteTimestamp: (current + seconds) * 1000 },
+  ]);
+  if (response?.error) {
+    throw new Error(`surfnet_timeTravel failed: ${JSON.stringify(response.error)}`);
+  }
+}
+
 const defaultTicket = (ticketId = 1) => ({
   ticketId: new BN(ticketId),
   eventId: new BN(2026),
@@ -88,6 +101,52 @@ async function expectFailure(promise: Promise<unknown>, code: string) {
       .join("\n");
     assert.include(text, code);
   }
+}
+
+async function createCollectible(owner: Keypair, name: string): Promise<PublicKey> {
+  const umi = createUmi(connection.rpcEndpoint).use(mplCore());
+  const signer = createSignerFromKeypair(
+    umi,
+    umi.eddsa.createKeypairFromSecretKey(owner.secretKey)
+  );
+  umi.use(keypairIdentity(signer));
+
+  const assetSigner = generateSigner(umi);
+  await create(umi, {
+    asset: assetSigner,
+    name,
+    uri: "https://example.com/metadata/test-collectible.json",
+  }).sendAndConfirm(umi);
+
+  return new PublicKey(assetSigner.publicKey);
+}
+
+async function issueTicketWith(
+  ticketId: number,
+  owner: PublicKey,
+  options: { eventTimestamp: number; transferDeadline: number; maxResaleSol?: number }
+) {
+  const ticket = defaultTicket(ticketId);
+  await program.methods
+    .createTicket(
+      ticket.ticketId,
+      ticket.eventId,
+      ticket.eventName,
+      ticket.seatCategory,
+      new BN(options.eventTimestamp),
+      new BN(options.transferDeadline),
+      new BN((options.maxResaleSol ?? 0.5) * LAMPORTS_PER_SOL),
+      ticket.metadataUri,
+      owner
+    )
+    .accountsPartial({
+      authority: issuerAuthority.publicKey,
+      issuer: issuerPda,
+      ticket: ticketPda(ticketId),
+      systemProgram: SystemProgram.programId,
+    })
+    .signers([issuerAuthority])
+    .rpc();
 }
 
 async function issueTicket(ticketId: number, owner: PublicKey, maxResaleSol = 0.5) {
@@ -335,6 +394,71 @@ describe("rwa_exchange: configuration and issuance", () => {
     assert.equal(config.paused, false);
     assert.equal(config.feeBps, 250);
   });
+
+  it("rejects a fee above the protocol cap", async () => {
+    await expectFailure(
+      program.methods
+        .updateMarketplace(1_001, treasury.publicKey, false)
+        .accountsPartial({ authority: authority.publicKey, marketplace: marketplacePda })
+        .rpc(),
+      "FeeTooHigh"
+    );
+
+    const config = await program.account.marketplaceConfig.fetch(marketplacePda);
+    assert.equal(config.feeBps, 250);
+  });
+
+  it("rejects empty names, zero resale prices and past events", async () => {
+    const base = () => ({
+      ticketId: new BN(20),
+      eventId: new BN(2026),
+      eventName: "Cricket Championship",
+      seatCategory: "General Stand",
+      eventTimestamp: new BN(now() + 30 * 24 * 60 * 60),
+      transferDeadline: new BN(now() + 25 * 24 * 60 * 60),
+      maxResalePrice: new BN(0.5 * LAMPORTS_PER_SOL),
+      metadataUri: "https://example.com/metadata/cricket.json",
+      owner: issuerAuthority.publicKey,
+    });
+
+    const send = (ticket: ReturnType<typeof base>, ticketId: number) =>
+      program.methods
+        .createTicket(
+          ticket.ticketId,
+          ticket.eventId,
+          ticket.eventName,
+          ticket.seatCategory,
+          ticket.eventTimestamp,
+          ticket.transferDeadline,
+          ticket.maxResalePrice,
+          ticket.metadataUri,
+          ticket.owner
+        )
+        .accountsPartial({
+          authority: issuerAuthority.publicKey,
+          issuer: issuerPda,
+          ticket: ticketPda(ticketId),
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([issuerAuthority])
+        .rpc();
+
+    const empty = base();
+    empty.ticketId = new BN(20);
+    empty.eventName = "";
+    await expectFailure(send(empty, 20), "EmptyName");
+
+    const free = base();
+    free.ticketId = new BN(21);
+    free.maxResalePrice = new BN(0);
+    await expectFailure(send(free, 21), "InvalidPrice");
+
+    const past = base();
+    past.ticketId = new BN(22);
+    past.eventTimestamp = new BN(now() - 60);
+    past.transferDeadline = new BN(now() - 120);
+    await expectFailure(send(past, 22), "EventInThePast");
+  });
 });
 
 describe("rwa_exchange: listings and escrow", () => {
@@ -505,6 +629,176 @@ describe("rwa_exchange: listings and escrow", () => {
     const relisted = await program.account.listing.fetch(listing);
     assert.equal(relisted.asset.toBase58(), ticketPda(ticketId).toBase58());
   });
+
+  it("stops a ticket from being listed once its transfer window closes", async () => {
+    const windowTicketId = 203;
+    await issueTicketWith(windowTicketId, seller.publicKey, {
+      eventTimestamp: (await chainNow()) + 30 * 24 * 60 * 60,
+      transferDeadline: (await chainNow()) + 5,
+    });
+
+    await sleep(6_000);
+
+    await expectFailure(
+      program.methods
+        .listTicket(price, new BN(now() + 86_400))
+        .accountsPartial({
+          seller: seller.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(windowTicketId),
+          listing: listingPda(ticketPda(windowTicketId)),
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([seller])
+        .rpc(),
+      "TransferWindowExpired"
+    );
+  });
+
+  it("stops a redeemed ticket from being listed", async () => {
+    const redeemedTicketId = 204;
+    await issueTicket(redeemedTicketId, seller.publicKey);
+
+    await program.methods
+      .redeemTicket()
+      .accountsPartial({
+        authority: issuerAuthority.publicKey,
+        issuer: issuerPda,
+        ticket: ticketPda(redeemedTicketId),
+      })
+      .signers([issuerAuthority])
+      .rpc();
+
+    await expectFailure(
+      program.methods
+        .listTicket(price, new BN(now() + 86_400))
+        .accountsPartial({
+          seller: seller.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(redeemedTicketId),
+          listing: listingPda(ticketPda(redeemedTicketId)),
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([seller])
+        .rpc(),
+      "TicketRedeemed"
+    );
+  });
+
+  it("still lets a seller cancel while the marketplace is paused", async () => {
+    const pausedTicketId = 205;
+    await issueTicket(pausedTicketId, seller.publicKey);
+    const pausedListing = listingPda(ticketPda(pausedTicketId));
+
+    await program.methods
+      .listTicket(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(pausedTicketId),
+        listing: pausedListing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+
+    await program.methods
+      .updateMarketplace(250, treasury.publicKey, true)
+      .accountsPartial({ authority: authority.publicKey, marketplace: marketplacePda })
+      .rpc();
+
+    try {
+      await program.methods
+        .cancelTicketListing()
+        .accountsPartial({
+          seller: seller.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(pausedTicketId),
+          listing: pausedListing,
+        })
+        .signers([seller])
+        .rpc();
+    } finally {
+      await program.methods
+        .updateMarketplace(250, treasury.publicKey, false)
+        .accountsPartial({ authority: authority.publicKey, marketplace: marketplacePda })
+        .rpc();
+    }
+
+    const ticket = await program.account.ticket.fetch(ticketPda(pausedTicketId));
+    assert.equal(ticket.owner.toBase58(), seller.publicKey.toBase58());
+    assert.isNull(await connection.getAccountInfo(pausedListing));
+  });
+
+  it("rejects cross-adapter instructions on a ticket listing", async () => {
+    const crossTicketId = 207;
+    await issueTicket(crossTicketId, seller.publicKey);
+    const crossListing = listingPda(ticketPda(crossTicketId));
+
+    await program.methods
+      .listTicket(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(crossTicketId),
+        listing: crossListing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+
+    const buyer = Keypair.generate();
+    await fund(buyer.publicKey, 1);
+
+    await expectFailure(
+      program.methods
+        .buyCollectible()
+        .accountsPartial({
+          buyer: buyer.publicKey,
+          marketplace: marketplacePda,
+          asset: ticketPda(crossTicketId),
+          collection: null,
+          seller: seller.publicKey,
+          treasury: treasury.publicKey,
+          listing: crossListing,
+          mplCoreProgram: MPL_CORE_ID,
+          logWrapper: null,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([buyer])
+        .rpc(),
+      "AssetTypeMismatch"
+    );
+
+    await expectFailure(
+      program.methods
+        .cancelCollectibleListing()
+        .accountsPartial({
+          seller: seller.publicKey,
+          marketplace: marketplacePda,
+          asset: ticketPda(crossTicketId),
+          collection: null,
+          listing: crossListing,
+          mplCoreProgram: MPL_CORE_ID,
+          logWrapper: null,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([seller])
+        .rpc(),
+      "AssetTypeMismatch"
+    );
+
+    await program.methods
+      .cancelTicketListing()
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(crossTicketId),
+        listing: crossListing,
+      })
+      .signers([seller])
+      .rpc();
+  });
 });
 
 describe("rwa_exchange: collectible listings and escrow", () => {
@@ -613,6 +907,17 @@ describe("rwa_exchange: atomic ticket settlement", () => {
 
   const balance = (pubkey: PublicKey) => connection.getBalance(pubkey, "confirmed");
   const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Advance the Surfpool clock (absolute milliseconds) to test time-dependent rules. */
+async function timeTravel(seconds: number): Promise<void> {
+  const current = await chainNow();
+  const response = await (connection as any)._rpcRequest("surfnet_timeTravel", [
+    { absoluteTimestamp: (current + seconds) * 1000 },
+  ]);
+  if (response?.error) {
+    throw new Error(`surfnet_timeTravel failed: ${JSON.stringify(response.error)}`);
+  }
+}
 
   before(async () => {
     await fund(seller.publicKey, 2);
@@ -802,6 +1107,95 @@ describe("rwa_exchange: atomic ticket settlement", () => {
     const ticket = await program.account.ticket.fetch(ticketPda(expiredTicketId));
     assert.equal(ticket.owner.toBase58(), seller.publicKey.toBase58());
   });
+
+  it("rejects a purchase after the ticket transfer window closes", async () => {
+    const deadlineTicketId = 206;
+    await issueTicketWith(deadlineTicketId, seller.publicKey, {
+      eventTimestamp: (await chainNow()) + 30 * 24 * 60 * 60,
+      transferDeadline: (await chainNow()) + 3_600,
+    });
+    const deadlineListing = listingPda(ticketPda(deadlineTicketId));
+
+    await program.methods
+      .listTicket(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(deadlineTicketId),
+        listing: deadlineListing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+
+    await timeTravel(7_200);
+
+    await expectFailure(
+      program.methods
+        .buyTicket()
+        .accountsPartial({
+          buyer: buyer.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(deadlineTicketId),
+          seller: seller.publicKey,
+          treasury: treasury.publicKey,
+          listing: deadlineListing,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([buyer])
+        .rpc(),
+      "TransferWindowExpired"
+    );
+
+    await program.methods
+      .cancelTicketListing()
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(deadlineTicketId),
+        listing: deadlineListing,
+      })
+      .signers([seller])
+      .rpc();
+  });
+
+  it("lets the buyer relist and resell the ticket", async () => {
+    const resaleBuyer = Keypair.generate();
+    await fund(resaleBuyer.publicKey, 2);
+
+    await program.methods
+      .listTicket(new BN(0.45 * LAMPORTS_PER_SOL), new BN(now() + 86_400))
+      .accountsPartial({
+        seller: buyer.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(ticketId),
+        listing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([buyer])
+      .rpc();
+
+    const relisting = await program.account.listing.fetch(listing);
+    assert.equal(relisting.seller.toBase58(), buyer.publicKey.toBase58());
+
+    await program.methods
+      .buyTicket()
+      .accountsPartial({
+        buyer: resaleBuyer.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(ticketId),
+        seller: buyer.publicKey,
+        treasury: treasury.publicKey,
+        listing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([resaleBuyer])
+      .rpc();
+
+    const ticket = await program.account.ticket.fetch(ticketPda(ticketId));
+    assert.equal(ticket.owner.toBase58(), resaleBuyer.publicKey.toBase58());
+    assert.isNull(await connection.getAccountInfo(listing));
+  });
 });
 
 describe("rwa_exchange: atomic collectible settlement", () => {
@@ -908,5 +1302,67 @@ describe("rwa_exchange: atomic collectible settlement", () => {
         .rpc(),
       "AccountNotInitialized"
     );
+  });
+
+  it("lets the buyer relist and blocks other cancel attempts", async () => {
+    const listing = listingPda(asset);
+    const resaleBuyer = Keypair.generate();
+    const attacker = Keypair.generate();
+    await fund(resaleBuyer.publicKey, 2);
+    await fund(attacker.publicKey, 1);
+
+    await program.methods
+      .listCollectible(new BN(0.3 * LAMPORTS_PER_SOL), new BN(now() + 86_400))
+      .accountsPartial({
+        seller: buyer.publicKey,
+        marketplace: marketplacePda,
+        asset,
+        collection: null,
+        listing,
+        mplCoreProgram: MPL_CORE_ID,
+        logWrapper: null,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([buyer])
+      .rpc();
+
+    await expectFailure(
+      program.methods
+        .cancelCollectibleListing()
+        .accountsPartial({
+          seller: attacker.publicKey,
+          marketplace: marketplacePda,
+          asset,
+          collection: null,
+          listing,
+          mplCoreProgram: MPL_CORE_ID,
+          logWrapper: null,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([attacker])
+        .rpc(),
+      "ConstraintHasOne"
+    );
+
+    await program.methods
+      .buyCollectible()
+      .accountsPartial({
+        buyer: resaleBuyer.publicKey,
+        marketplace: marketplacePda,
+        asset,
+        collection: null,
+        seller: buyer.publicKey,
+        treasury: treasury.publicKey,
+        listing,
+        mplCoreProgram: MPL_CORE_ID,
+        logWrapper: null,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([resaleBuyer])
+      .rpc();
+
+    const assetAccount = await fetchAsset(umi, asset.toBase58());
+    assert.equal(assetAccount.owner, resaleBuyer.publicKey.toBase58());
+    assert.isNull(await connection.getAccountInfo(listing));
   });
 });
