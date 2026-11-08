@@ -20,8 +20,8 @@ export const FEE_DENOMINATOR = 10_000;
 
 export const APP_IDENTITY = {
   name: "AssetX",
-  uri: "https://github.com/pradeepbiswas/AssetX",
-  icon: "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app/assets/icon.png",
+  uri: "https://assetx.app",
+  icon: "favicon.png",
 };
 
 export const txExplorerUrl = (signature: string) =>
