@@ -146,7 +146,8 @@ describe("rwa_exchange: config, issuers and tickets", () => {
         ticket.eventTimestamp,
         ticket.transferDeadline,
         ticket.maxResalePrice,
-        ticket.metadataUri
+        ticket.metadataUri,
+        issuerAuthority.publicKey
       )
       .accountsPartial({
         authority: issuerAuthority.publicKey,
@@ -179,7 +180,8 @@ describe("rwa_exchange: config, issuers and tickets", () => {
           ticket.eventTimestamp,
           ticket.transferDeadline,
           ticket.maxResalePrice,
-          ticket.metadataUri
+          ticket.metadataUri,
+          issuerAuthority.publicKey
         )
         .accountsPartial({
           authority: issuerAuthority.publicKey,
@@ -203,7 +205,8 @@ describe("rwa_exchange: config, issuers and tickets", () => {
           new BN(now() + 1000),
           new BN(now() + 2000),
           new BN(LAMPORTS_PER_SOL),
-          "https://example.com/metadata/football.json"
+          "https://example.com/metadata/football.json",
+          issuerAuthority.publicKey
         )
         .accountsPartial({
           authority: issuerAuthority.publicKey,
@@ -229,7 +232,8 @@ describe("rwa_exchange: config, issuers and tickets", () => {
           new BN(now() + 1000),
           new BN(now() + 500),
           new BN(LAMPORTS_PER_SOL),
-          "https://example.com/metadata/festival.json"
+          "https://example.com/metadata/festival.json",
+          issuerAuthority.publicKey
         )
         .accountsPartial({
           authority: stranger.publicKey,
@@ -264,7 +268,8 @@ describe("rwa_exchange: config, issuers and tickets", () => {
           ticket.eventTimestamp,
           ticket.transferDeadline,
           ticket.maxResalePrice,
-          ticket.metadataUri
+          ticket.metadataUri,
+          issuerAuthority.publicKey
         )
         .accountsPartial({
           authority: issuerAuthority.publicKey,

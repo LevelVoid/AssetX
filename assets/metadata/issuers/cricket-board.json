@@ -1,0 +1,19 @@
+{
+  "name": "Demo Cricket Board",
+  "description": "Fictional cricket organiser used to issue demo tickets on Solana Devnet.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/placeholder-issuer.svg",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Issuer"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

@@ -46,4 +46,6 @@ pub enum MarketplaceError {
     CoreOwnerMismatch,
     #[msg("Arithmetic overflow")]
     ArithmeticOverflow,
+    #[msg("Ticket owner must be a valid public key")]
+    InvalidTicketOwner,
 }

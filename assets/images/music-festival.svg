@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2b0a3d"/>
+      <stop offset="55%" stop-color="#7a1fa2"/>
+      <stop offset="100%" stop-color="#ff5fa2"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <path d="M120 0 L220 500 L300 500 L200 0 Z" fill="url(#beam)"/>
+  <path d="M420 0 L520 500 L600 500 L500 0 Z" fill="url(#beam)"/>
+  <path d="M650 0 L720 500 L780 500 L710 0 Z" fill="url(#beam)"/>
+  <g fill="none" stroke="#ffffff" stroke-width="3" opacity="0.5">
+    <circle cx="650" cy="390" r="60"/>
+    <path d="M650 330 v20 M650 450 v20 M590 390 h20 M730 390 h20"/>
+  </g>
+  <g fill="#ffffff" font-family="Helvetica,Arial,sans-serif">
+    <text x="60" y="120" font-size="20" letter-spacing="6" opacity="0.8">DEMO EVENT TICKET</text>
+    <text x="60" y="205" font-size="58" font-weight="bold">MUSIC</text>
+    <text x="60" y="270" font-size="58" font-weight="bold">FESTIVAL</text>
+    <text x="60" y="330" font-size="26" letter-spacing="2" opacity="0.95">VIP PASS</text>
+    <text x="60" y="420" font-size="16" letter-spacing="3" opacity="0.65">SOLANA DEVNET · NOT VALID FOR ENTRY</text>
+  </g>
+</svg>

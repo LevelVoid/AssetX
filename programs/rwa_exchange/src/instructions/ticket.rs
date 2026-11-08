@@ -20,9 +20,14 @@ pub fn create_ticket(
     transfer_deadline: i64,
     max_resale_price: u64,
     metadata_uri: String,
+    owner: Pubkey,
 ) -> Result<()> {
     let now = Clock::get()?.unix_timestamp;
 
+    require!(
+        owner != Pubkey::default(),
+        MarketplaceError::InvalidTicketOwner
+    );
     require!(!event_name.is_empty(), MarketplaceError::EmptyName);
     require!(
         event_name.len() <= MAX_EVENT_NAME_LEN,
@@ -52,7 +57,7 @@ pub fn create_ticket(
     let ticket = &mut ctx.accounts.ticket;
     ticket.ticket_id = ticket_id;
     ticket.issuer = ctx.accounts.issuer.key();
-    ticket.owner = ctx.accounts.authority.key();
+    ticket.owner = owner;
     ticket.event_id = event_id;
     ticket.event_name = event_name;
     ticket.seat_category = seat_category;

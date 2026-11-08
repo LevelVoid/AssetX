@@ -1,0 +1,19 @@
+{
+  "name": "RWA Demo Collectibles",
+  "description": "Demo Metaplex Core collection containing the sample digital collectibles minted for the RWA Exchange Solana Devnet marketplace.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/championship-final.svg",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Collection"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

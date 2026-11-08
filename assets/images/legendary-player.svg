@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a0709"/>
+      <stop offset="55%" stop-color="#a1121f"/>
+      <stop offset="100%" stop-color="#ff6b3d"/>
+    </linearGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <rect x="470" y="70" width="270" height="360" rx="20" fill="#000000" opacity="0.28"/>
+  <rect x="470" y="70" width="270" height="360" rx="20" fill="url(#shine)"/>
+  <circle cx="605" cy="220" r="78" fill="#ffffff" opacity="0.14"/>
+  <text x="605" y="262" font-family="Helvetica,Arial,sans-serif" font-size="112" font-weight="bold" fill="#ffffff" text-anchor="middle" opacity="0.92">7</text>
+  <rect x="500" y="330" width="210" height="8" rx="4" fill="#ffffff" opacity="0.4"/>
+  <rect x="500" y="352" width="140" height="8" rx="4" fill="#ffffff" opacity="0.25"/>
+  <g fill="#ffe9dd" font-family="Helvetica,Arial,sans-serif">
+    <text x="55" y="110" font-size="18" letter-spacing="6" opacity="0.85">DIGITAL COLLECTIBLE · DEMO</text>
+    <text x="55" y="190" font-size="52" font-weight="bold">LEGENDARY</text>
+    <text x="55" y="250" font-size="52" font-weight="bold">PLAYER</text>
+    <text x="55" y="320" font-size="24" letter-spacing="2" opacity="0.95">SPORTS CARD · SERIAL 07</text>
+    <text x="55" y="430" font-size="15" letter-spacing="3" opacity="0.6">METAPLEX CORE · SOLANA DEVNET</text>
+  </g>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#031f2a"/>
+      <stop offset="55%" stop-color="#0b6b74"/>
+      <stop offset="100%" stop-color="#4ee6c4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <g stroke="#e6fffb" stroke-width="3" opacity="0.35" fill="none">
+    <circle cx="620" cy="250" r="150"/>
+    <circle cx="620" cy="250" r="110"/>
+    <circle cx="620" cy="250" r="70"/>
+    <path d="M470 250 h300 M620 100 v300"/>
+  </g>
+  <circle cx="620" cy="250" r="34" fill="#e6fffb" opacity="0.85"/>
+  <g fill="#e6fffb" font-family="Helvetica,Arial,sans-serif">
+    <text x="55" y="110" font-size="18" letter-spacing="6" opacity="0.85">DIGITAL COLLECTIBLE · DEMO</text>
+    <text x="55" y="190" font-size="48" font-weight="bold">FESTIVAL</text>
+    <text x="55" y="248" font-size="48" font-weight="bold">COMMEMORATIVE</text>
+    <text x="55" y="320" font-size="24" letter-spacing="2" opacity="0.95">CREATOR EDITION · 1 OF 25</text>
+    <text x="55" y="430" font-size="15" letter-spacing="3" opacity="0.65">METAPLEX CORE · SOLANA DEVNET</text>
+  </g>
+</svg>

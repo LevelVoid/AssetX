@@ -1,0 +1,44 @@
+{
+  "name": "Legendary Player \u2014 Digital Sports Card",
+  "description": "Digital sports card for a fictional legendary player, issued as a demo Metaplex Core asset.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/legendary-player.svg",
+  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Collectible"
+    },
+    {
+      "trait_type": "Creator",
+      "value": "Demo Football League"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "RWA Demo Collectibles"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "Serialized Card"
+    },
+    {
+      "trait_type": "Serial Number",
+      "value": "07"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Legendary"
+    },
+    {
+      "trait_type": "Asset Standard",
+      "value": "Metaplex Core"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

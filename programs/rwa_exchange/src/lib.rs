@@ -80,6 +80,7 @@ pub mod rwa_exchange {
         transfer_deadline: i64,
         max_resale_price: u64,
         metadata_uri: String,
+        owner: Pubkey,
     ) -> Result<()> {
         instructions::ticket::create_ticket(
             ctx,
@@ -91,6 +92,7 @@ pub mod rwa_exchange {
             transfer_deadline,
             max_resale_price,
             metadata_uri,
+            owner,
         )
     }
 

@@ -1,0 +1,44 @@
+{
+  "name": "Festival Commemorative Collectible",
+  "description": "Creator-issued commemorative collectible for a fictional music festival, minted as a demo Metaplex Core asset.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/festival-commemorative.svg",
+  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Collectible"
+    },
+    {
+      "trait_type": "Creator",
+      "value": "Demo Live Events"
+    },
+    {
+      "trait_type": "Collection",
+      "value": "RWA Demo Collectibles"
+    },
+    {
+      "trait_type": "Edition",
+      "value": "Creator Edition"
+    },
+    {
+      "trait_type": "Serial Number",
+      "value": "1 of 25"
+    },
+    {
+      "trait_type": "Rarity",
+      "value": "Uncommon"
+    },
+    {
+      "trait_type": "Asset Standard",
+      "value": "Metaplex Core"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "name": "Football Final \u2014 Premium Stand",
+  "description": "Demo secondary-market ticket for the fictional Football Final (Premium Stand). Issued on Solana Devnet as a custom Anchor account; ownership and redemption state are enforced on-chain. This is a simulated asset and is not valid for entry to any real event.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/football-final.svg",
+  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Ticket"
+    },
+    {
+      "trait_type": "Event",
+      "value": "Football Final"
+    },
+    {
+      "trait_type": "Seat Category",
+      "value": "Premium Stand"
+    },
+    {
+      "trait_type": "Issuer",
+      "value": "Demo Football League"
+    },
+    {
+      "trait_type": "Asset Standard",
+      "value": "Anchor Ticket Account"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

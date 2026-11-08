@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#12161f"/>
+      <stop offset="100%" stop-color="#2b3550"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="400" fill="url(#bg)"/>
+  <circle cx="200" cy="170" r="70" fill="none" stroke="#7c9cff" stroke-width="4" opacity="0.7"/>
+  <path d="M200 120 v100 M150 170 h100" stroke="#7c9cff" stroke-width="4" opacity="0.5"/>
+  <g fill="#dfe7ff" font-family="Helvetica,Arial,sans-serif" text-anchor="middle">
+    <text x="200" y="300" font-size="20" letter-spacing="4">DEMO ISSUER</text>
+    <text x="200" y="330" font-size="14" letter-spacing="2" opacity="0.6">SOLANA DEVNET</text>
+  </g>
+</svg>

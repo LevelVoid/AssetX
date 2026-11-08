@@ -1,0 +1,36 @@
+{
+  "name": "Music Festival \u2014 VIP Pass",
+  "description": "Demo secondary-market ticket for the fictional Music Festival (VIP Pass). Issued on Solana Devnet as a custom Anchor account; ownership and redemption state are enforced on-chain. This is a simulated asset and is not valid for entry to any real event.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/music-festival.svg",
+  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Ticket"
+    },
+    {
+      "trait_type": "Event",
+      "value": "Music Festival"
+    },
+    {
+      "trait_type": "Seat Category",
+      "value": "VIP Pass"
+    },
+    {
+      "trait_type": "Issuer",
+      "value": "Demo Live Events"
+    },
+    {
+      "trait_type": "Asset Standard",
+      "value": "Anchor Ticket Account"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

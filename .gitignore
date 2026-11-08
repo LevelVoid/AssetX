@@ -32,3 +32,6 @@ app/web-build/
 # Misc
 .DS_Store
 *.log
+
+# Demo run state
+.demo-state.json

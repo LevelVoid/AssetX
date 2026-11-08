@@ -1,0 +1,36 @@
+{
+  "name": "Cricket Championship \u2014 General Stand",
+  "description": "Demo secondary-market ticket for the fictional Cricket Championship (General Stand). Issued on Solana Devnet as a custom Anchor account; ownership and redemption state are enforced on-chain. This is a simulated asset and is not valid for entry to any real event.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/cricket-championship.svg",
+  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Ticket"
+    },
+    {
+      "trait_type": "Event",
+      "value": "Cricket Championship"
+    },
+    {
+      "trait_type": "Seat Category",
+      "value": "General Stand"
+    },
+    {
+      "trait_type": "Issuer",
+      "value": "Demo Cricket Board"
+    },
+    {
+      "trait_type": "Asset Standard",
+      "value": "Anchor Ticket Account"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

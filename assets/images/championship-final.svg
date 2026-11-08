@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1204"/>
+      <stop offset="50%" stop-color="#4d3208"/>
+      <stop offset="100%" stop-color="#c9962a"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff3c4"/>
+      <stop offset="55%" stop-color="#e8b93c"/>
+      <stop offset="100%" stop-color="#8a6410"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <g transform="translate(600 250)">
+    <path d="M-70 -120 h140 v40 q0 70 -70 90 q-70 -20 -70 -90 z" fill="url(#gold)"/>
+    <rect x="-20" y="10" width="40" height="70" fill="url(#gold)"/>
+    <rect x="-70" y="80" width="140" height="34" rx="8" fill="url(#gold)"/>
+    <path d="M-70 -100 q-55 0 -55 45 q0 35 55 35" fill="none" stroke="#e8b93c" stroke-width="10"/>
+    <path d="M70 -100 q55 0 55 45 q0 35 -55 35" fill="none" stroke="#e8b93c" stroke-width="10"/>
+  </g>
+  <g fill="#fff3c4" font-family="Helvetica,Arial,sans-serif">
+    <text x="55" y="110" font-size="18" letter-spacing="6" opacity="0.85">DIGITAL COLLECTIBLE · DEMO</text>
+    <text x="55" y="190" font-size="52" font-weight="bold">CHAMPIONSHIP</text>
+    <text x="55" y="250" font-size="52" font-weight="bold">FINAL</text>
+    <text x="55" y="320" font-size="24" letter-spacing="2" opacity="0.95">LIMITED EDITION · 1 OF 10</text>
+    <text x="55" y="430" font-size="15" letter-spacing="3" opacity="0.6">METAPLEX CORE · SOLANA DEVNET</text>
+  </g>
+</svg>

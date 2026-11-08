@@ -1,0 +1,19 @@
+{
+  "name": "Demo Live Events",
+  "description": "Fictional concert and festival promoter used to issue demo tickets and collectibles.",
+  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/placeholder-issuer.svg",
+  "attributes": [
+    {
+      "trait_type": "Category",
+      "value": "Issuer"
+    },
+    {
+      "trait_type": "Network",
+      "value": "Solana Devnet"
+    },
+    {
+      "trait_type": "Demo",
+      "value": "true"
+    }
+  ]
+}

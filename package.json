@@ -12,8 +12,8 @@
     "test:devnet": "anchor test --skip-local-validator",
     "build": "anchor build",
     "seed": "ts-node scripts/issue-demo-assets.ts",
-    "seed:tickets": "ts-node scripts/issue-demo-tickets.ts",
-    "seed:collectibles": "ts-node scripts/issue-demo-collectibles.ts"
+    "seed:tickets": "ts-node scripts/issue-demo-assets.ts --only=tickets",
+    "seed:collectibles": "ts-node scripts/issue-demo-assets.ts --only=collectibles"
   },
   "devDependencies": {
     "@anchor-lang/core": "1.2.2",
