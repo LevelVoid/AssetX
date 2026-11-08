@@ -1,4 +1,4 @@
-# RWA Exchange
+# AssetX - A secondary asset exchange application
 
 A Solana Devnet secondary marketplace for **transferable event tickets** and **digital collectibles**.
 
