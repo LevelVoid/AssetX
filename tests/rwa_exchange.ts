@@ -49,6 +49,12 @@ const listingPda = (asset: PublicKey) =>
 
 const now = () => Math.floor(Date.now() / 1000);
 
+/** Cluster time, which can drift from the host clock on a local validator. */
+async function chainNow(): Promise<number> {
+  const slot = await connection.getSlot("confirmed");
+  return (await connection.getBlockTime(slot)) ?? now();
+}
+
 const defaultTicket = (ticketId = 1) => ({
   ticketId: new BN(ticketId),
   eventId: new BN(2026),
@@ -594,5 +600,313 @@ describe("rwa_exchange: collectible listings and escrow", () => {
     const assetAccount = await fetchAsset(umi, asset.toBase58());
     assert.equal(assetAccount.owner, seller.publicKey.toBase58());
     assert.isNull(await connection.getAccountInfo(listingPda(asset)));
+  });
+});
+
+describe("rwa_exchange: atomic ticket settlement", () => {
+  const seller = Keypair.generate();
+  const buyer = Keypair.generate();
+  const price = new BN(0.4 * LAMPORTS_PER_SOL);
+  const feeBps = 250;
+  const ticketId = 200;
+  const listing = listingPda(ticketPda(ticketId));
+
+  const balance = (pubkey: PublicKey) => connection.getBalance(pubkey, "confirmed");
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  before(async () => {
+    await fund(seller.publicKey, 2);
+    await fund(buyer.publicKey, 3);
+    await issueTicket(ticketId, seller.publicKey, 0.5);
+  });
+
+  async function list() {
+    await program.methods
+      .listTicket(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(ticketId),
+        listing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+  }
+
+  async function buy(from: Keypair, treasuryKey: PublicKey = treasury.publicKey) {
+    return program.methods
+      .buyTicket()
+      .accountsPartial({
+        buyer: from.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(ticketId),
+        seller: seller.publicKey,
+        treasury: treasuryKey,
+        listing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([from])
+      .rpc();
+  }
+
+  it("rejects purchases while the marketplace is paused", async () => {
+    await list();
+    await program.methods
+      .updateMarketplace(feeBps, treasury.publicKey, true)
+      .accountsPartial({ authority: authority.publicKey, marketplace: marketplacePda })
+      .rpc();
+
+    try {
+      await expectFailure(buy(buyer), "MarketplacePaused");
+    } finally {
+      await program.methods
+        .updateMarketplace(feeBps, treasury.publicKey, false)
+        .accountsPartial({ authority: authority.publicKey, marketplace: marketplacePda })
+        .rpc();
+    }
+    // Listing survives a rejected purchase.
+    const ticket = await program.account.ticket.fetch(ticketPda(ticketId));
+    assert.equal(ticket.owner.toBase58(), marketplacePda.toBase58());
+  });
+
+  it("rejects a fee redirect through a forged treasury account", async () => {
+    const attacker = Keypair.generate();
+    await fund(attacker.publicKey, 1);
+    await expectFailure(buy(buyer, attacker.publicKey), "ConstraintHasOne");
+  });
+
+  it("settles the sale atomically and splits the price", async () => {
+    const fee = (price.toNumber() * feeBps) / 10_000;
+    const listingRent = await balance(listing);
+    const sellerBefore = await balance(seller.publicKey);
+    const treasuryBefore = await balance(treasury.publicKey);
+    const buyerBefore = await balance(buyer.publicKey);
+
+    await buy(buyer);
+
+    const ticket = await program.account.ticket.fetch(ticketPda(ticketId));
+    assert.equal(ticket.owner.toBase58(), buyer.publicKey.toBase58());
+    assert.equal(ticket.redeemed, false);
+    assert.isNull(await connection.getAccountInfo(listing));
+
+    assert.equal((await balance(treasury.publicKey)) - treasuryBefore, fee);
+    assert.equal(
+      (await balance(seller.publicKey)) - sellerBefore,
+      price.toNumber() - fee + listingRent
+    );
+    assert.isAtLeast(buyerBefore - (await balance(buyer.publicKey)), price.toNumber());
+  });
+
+  it("does not allow a second buyer to take a sold listing", async () => {
+    const secondBuyer = Keypair.generate();
+    await fund(secondBuyer.publicKey, 2);
+    await expectFailure(buy(secondBuyer), "AccountNotInitialized");
+  });
+
+  it("rejects self-purchase", async () => {
+    const selfTicketId = 201;
+    await issueTicket(selfTicketId, seller.publicKey, 0.5);
+    const selfListing = listingPda(ticketPda(selfTicketId));
+
+    await program.methods
+      .listTicket(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(selfTicketId),
+        listing: selfListing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+
+    await expectFailure(
+      program.methods
+        .buyTicket()
+        .accountsPartial({
+          buyer: seller.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(selfTicketId),
+          seller: seller.publicKey,
+          treasury: treasury.publicKey,
+          listing: selfListing,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([seller])
+        .rpc(),
+      "SelfPurchase"
+    );
+
+    await program.methods
+      .cancelTicketListing()
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(selfTicketId),
+        listing: selfListing,
+      })
+      .signers([seller])
+      .rpc();
+  });
+
+  it("rejects an expired listing", async () => {
+    const expiredTicketId = 202;
+    await issueTicket(expiredTicketId, seller.publicKey, 0.5);
+    const expiredListing = listingPda(ticketPda(expiredTicketId));
+
+    const expiresAt = (await chainNow()) + 5;
+    await program.methods
+      .listTicket(price, new BN(expiresAt))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(expiredTicketId),
+        listing: expiredListing,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+
+    await sleep(6_000);
+
+    await expectFailure(
+      program.methods
+        .buyTicket()
+        .accountsPartial({
+          buyer: buyer.publicKey,
+          marketplace: marketplacePda,
+          ticket: ticketPda(expiredTicketId),
+          seller: seller.publicKey,
+          treasury: treasury.publicKey,
+          listing: expiredListing,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([buyer])
+        .rpc(),
+      "ListingExpired"
+    );
+
+    // The seller can still recover the asset after expiry.
+    await program.methods
+      .cancelTicketListing()
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        ticket: ticketPda(expiredTicketId),
+        listing: expiredListing,
+      })
+      .signers([seller])
+      .rpc();
+
+    const ticket = await program.account.ticket.fetch(ticketPda(expiredTicketId));
+    assert.equal(ticket.owner.toBase58(), seller.publicKey.toBase58());
+  });
+});
+
+describe("rwa_exchange: atomic collectible settlement", () => {
+  const seller = Keypair.generate();
+  const buyer = Keypair.generate();
+  const price = new BN(0.25 * LAMPORTS_PER_SOL);
+  const feeBps = 250;
+
+  let umi: ReturnType<typeof createUmi>;
+  let asset: PublicKey;
+
+  const balance = (pubkey: PublicKey) => connection.getBalance(pubkey, "confirmed");
+
+  before(async () => {
+    await fund(seller.publicKey, 3);
+    await fund(buyer.publicKey, 3);
+
+    umi = createUmi(connection.rpcEndpoint).use(mplCore());
+    const signer = createSignerFromKeypair(
+      umi,
+      umi.eddsa.createKeypairFromSecretKey(seller.secretKey)
+    );
+    umi.use(keypairIdentity(signer));
+
+    const assetSigner = generateSigner(umi);
+    await create(umi, {
+      asset: assetSigner,
+      name: "Purchasable Collectible",
+      uri: "https://example.com/metadata/purchasable.json",
+    }).sendAndConfirm(umi);
+    asset = new PublicKey(assetSigner.publicKey);
+
+    await program.methods
+      .listCollectible(price, new BN(now() + 86_400))
+      .accountsPartial({
+        seller: seller.publicKey,
+        marketplace: marketplacePda,
+        asset,
+        collection: null,
+        listing: listingPda(asset),
+        mplCoreProgram: MPL_CORE_ID,
+        logWrapper: null,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([seller])
+      .rpc();
+  });
+
+  it("transfers the Core asset and splits the price atomically", async () => {
+    const listing = listingPda(asset);
+    const fee = (price.toNumber() * feeBps) / 10_000;
+    const listingRent = await balance(listing);
+    const sellerBefore = await balance(seller.publicKey);
+    const treasuryBefore = await balance(treasury.publicKey);
+
+    await program.methods
+      .buyCollectible()
+      .accountsPartial({
+        buyer: buyer.publicKey,
+        marketplace: marketplacePda,
+        asset,
+        collection: null,
+        seller: seller.publicKey,
+        treasury: treasury.publicKey,
+        listing,
+        mplCoreProgram: MPL_CORE_ID,
+        logWrapper: null,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([buyer])
+      .rpc();
+
+    const assetAccount = await fetchAsset(umi, asset.toBase58());
+    assert.equal(assetAccount.owner, buyer.publicKey.toBase58());
+    assert.isNull(await connection.getAccountInfo(listing));
+
+    assert.equal((await balance(treasury.publicKey)) - treasuryBefore, fee);
+    assert.equal(
+      (await balance(seller.publicKey)) - sellerBefore,
+      price.toNumber() - fee + listingRent
+    );
+  });
+
+  it("does not allow a second buyer to take a sold collectible", async () => {
+    const secondBuyer = Keypair.generate();
+    await fund(secondBuyer.publicKey, 2);
+
+    await expectFailure(
+      program.methods
+        .buyCollectible()
+        .accountsPartial({
+          buyer: secondBuyer.publicKey,
+          marketplace: marketplacePda,
+          asset,
+          collection: null,
+          seller: seller.publicKey,
+          treasury: treasury.publicKey,
+          listing: listingPda(asset),
+          mplCoreProgram: MPL_CORE_ID,
+          logWrapper: null,
+          systemProgram: SystemProgram.programId,
+        })
+        .signers([secondBuyer])
+        .rpc(),
+      "AccountNotInitialized"
+    );
   });
 });

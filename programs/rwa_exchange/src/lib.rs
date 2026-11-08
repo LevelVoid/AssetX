@@ -132,4 +132,16 @@ pub mod rwa_exchange {
     pub fn cancel_collectible_listing(ctx: Context<CancelCollectibleListing>) -> Result<()> {
         instructions::collectible::cancel_collectible_listing(ctx)
     }
+
+    // -------------------------------------------------------------- purchase
+
+    /// Buy a listed ticket with native SOL settlement.
+    pub fn buy_ticket(ctx: Context<BuyTicket>) -> Result<()> {
+        instructions::purchase::buy_ticket(ctx)
+    }
+
+    /// Buy a listed Metaplex Core collectible with native SOL settlement.
+    pub fn buy_collectible(ctx: Context<BuyCollectible>) -> Result<()> {
+        instructions::purchase::buy_collectible(ctx)
+    }
 }
