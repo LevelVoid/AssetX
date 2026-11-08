@@ -13,8 +13,8 @@ rwa_exchange = "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA"
 rwa_exchange = "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA"
 
 [provider]
-cluster = "devnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
-test = "yarn run ts-mocha -t 1000000 tests/*.ts"
+test = "npx ts-mocha -t 1000000 tests/*.ts"

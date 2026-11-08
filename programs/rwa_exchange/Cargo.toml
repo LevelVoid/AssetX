@@ -1,0 +1,19 @@
+[package]
+name = "rwa_exchange"
+version = "0.1.0"
+description = "RWA Exchange: Solana secondary marketplace for event tickets and digital collectibles"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "rwa_exchange"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = "1.2.2"
+mpl-core = "0.12.1"
