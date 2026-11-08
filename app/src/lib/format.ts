@@ -47,8 +47,11 @@ export const timeLeft = (expiresAt: BN): string => {
   return `${Math.max(1, Math.floor(seconds / 60))}m left`;
 };
 
-export const shortAddress = (address: string, chars = 4): string =>
-  `${address.slice(0, chars)}…${address.slice(-chars)}`;
+export function shortAddress(address: string, chars = 4): string {
+  if (!address || typeof address !== 'string') return '';
+  if (address.length <= chars * 2) return address;
+  return `${address.slice(0, chars)}…${address.slice(-chars)}`;
+}
 
 export const feeFor = (priceLamports: BN, feeBps: number): BN => {
   const fee = priceLamports.muln(feeBps).divn(10_000);
