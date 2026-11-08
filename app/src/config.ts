@@ -19,7 +19,7 @@ export const EXPLORER_BASE = "https://explorer.solana.com";
 export const FEE_DENOMINATOR = 10_000;
 
 export const APP_IDENTITY = {
-  name: "RWA Exchange",
+  name: "AssetX",
   uri: "https://github.com/pradeepbiswas/AssetX",
   icon: "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app/assets/icon.png",
 };

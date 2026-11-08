@@ -90,7 +90,7 @@ export function MarketplaceScreen() {
         <View style={styles.heroTop}>
           <View style={styles.heroText}>
             <Text style={styles.eyebrow}>SOLANA DEVNET · DEMO MARKET</Text>
-            <Text style={styles.title}>RWA Exchange</Text>
+            <Text style={styles.title}>AssetX</Text>
           </View>
           <WalletButton />
         </View>
@@ -153,7 +153,7 @@ export function MarketplaceScreen() {
 
       <Text style={styles.disclaimer}>
         Demo marketplace · all events and collectibles are simulated. Assets are
-        real Solana Devnet accounts created by the RWA Exchange program.
+        real Solana Devnet accounts created by the AssetX program.
       </Text>
     </Screen>
   );

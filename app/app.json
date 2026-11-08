@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "RWA Exchange",
-    "slug": "rwa-exchange",
+    "name": "AssetX",
+    "slug": "assetx",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "scheme": "rwaexchange",
+    "scheme": "assetx",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.rwaexchange.demo"
+      "bundleIdentifier": "com.assetx.app"
     },
     "android": {
-      "package": "com.rwaexchange.demo",
+      "package": "com.assetx.app",
       "adaptiveIcon": {
         "backgroundColor": "#070b14",
         "foregroundImage": "./assets/android-icon-foreground.png",

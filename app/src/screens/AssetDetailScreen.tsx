@@ -554,7 +554,7 @@ export function AssetDetailScreen() {
 
       <Text style={styles.disclaimer}>
         Demo asset · simulated real-world item on Solana Devnet. Transfers settle
-        atomically in native SOL through the RWA Exchange program.
+        atomically in native SOL through the AssetX program.
       </Text>
     </Screen>
   );

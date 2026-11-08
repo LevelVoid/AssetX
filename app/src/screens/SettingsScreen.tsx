@@ -250,7 +250,7 @@ export function SettingsScreen() {
       <View style={[styles.card, styles.demoCard]}>
         <Text style={styles.cardTitle}>Demo disclaimer</Text>
         <Text style={styles.muted}>
-          RWA Exchange is a Devnet demo. Event tickets, issuers, collectibles and
+          AssetX is a Devnet demo. Event tickets, issuers, collectibles and
           their metadata are simulated; no asset represents a real-world claim.
           Never send mainnet SOL to these demo addresses.
         </Text>
