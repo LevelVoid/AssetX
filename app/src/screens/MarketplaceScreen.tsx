@@ -39,7 +39,9 @@ export function MarketplaceScreen() {
       if (isRefresh) setRefreshing(true);
       setError(null);
       try {
+        console.log('[Marketplace] Fetching active listings...');
         const records = await fetchActiveListings(program);
+        console.log('[Marketplace] Got listings:', records.length);
         const summaries = await Promise.all(
           records.map(async (record) => {
             try {
@@ -48,7 +50,8 @@ export function MarketplaceScreen() {
                 record.publicKey,
                 record.account
               );
-            } catch {
+            } catch (err) {
+              console.error('[Marketplace] Failed to resolve listing:', err);
               return null;
             }
           })
@@ -57,6 +60,7 @@ export function MarketplaceScreen() {
           summaries.filter((summary): summary is AssetSummary => Boolean(summary))
         );
       } catch (cause) {
+        console.error('[Marketplace] Load error:', cause);
         setError(describeError(cause));
       } finally {
         setLoading(false);

@@ -68,14 +68,19 @@ export async function fetchCoreCollection(
 export async function fetchActiveListings(
   program: MarketplaceProgram
 ): Promise<Array<AccountWithPubkey<ListingAccount>>> {
-  const now = Math.floor(Date.now() / 1000);
-  const all = (await (program.account as any).listing.all()) as Array<
-    AccountWithPubkey<ListingAccount>
-  >;
-  return all.filter(
-    ({ account }) =>
-      "active" in account.status && account.expiresAt.toNumber() > now
-  );
+  try {
+    const now = Math.floor(Date.now() / 1000);
+    const all = (await (program.account as any).listing.all()) as Array<
+      AccountWithPubkey<ListingAccount>
+    >;
+    return all.filter(
+      ({ account }) =>
+        "active" in account.status && account.expiresAt.toNumber() > now
+    );
+  } catch (error) {
+    console.error('fetchActiveListings error:', error);
+    throw error;
+  }
 }
 
 export async function fetchMyListings(
