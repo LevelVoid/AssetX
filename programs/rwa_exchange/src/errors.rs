@@ -48,4 +48,10 @@ pub enum MarketplaceError {
     ArithmeticOverflow,
     #[msg("Ticket owner must be a valid public key")]
     InvalidTicketOwner,
+    #[msg("Signer does not own the asset being listed")]
+    NotAssetOwner,
+    #[msg("Account is not a valid Metaplex Core asset")]
+    InvalidCoreAsset,
+    #[msg("Asset is not a Metaplex Core asset owned by the marketplace escrow")]
+    CoreEscrowMismatch,
 }

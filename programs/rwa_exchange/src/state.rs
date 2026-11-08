@@ -30,6 +30,41 @@ pub enum AssetType {
     Collectible,
 }
 
+/// Lifecycle of a listing. Listing accounts are closed on sale or cancellation, so an
+/// account that still exists should always be [`ListingStatus::Active`].
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, Debug, Eq, PartialEq, InitSpace)]
+pub enum ListingStatus {
+    Active,
+    Sold,
+    Cancelled,
+}
+
+/// Shared listing schema for both asset adapters.
+///
+/// Seeds: `["listing", asset]`. The deterministic address guarantees at most one active
+/// listing per asset, and the account is closed when the listing ends so the same PDA can be
+/// reused by a later listing of the same asset.
+#[account]
+#[derive(InitSpace)]
+pub struct Listing {
+    /// Escrowed asset: a [`Ticket`] PDA or a Metaplex Core asset address.
+    pub asset: Pubkey,
+    /// Which adapter governs this asset.
+    pub asset_type: AssetType,
+    /// Seller and sole authority allowed to cancel.
+    pub seller: Pubkey,
+    /// Fixed asking price in lamports.
+    pub price_lamports: u64,
+    /// Listing creation time, unix seconds.
+    pub created_at: i64,
+    /// Listing expiry, unix seconds.
+    pub expires_at: i64,
+    /// Current listing status.
+    pub status: ListingStatus,
+    /// PDA bump.
+    pub bump: u8,
+}
+
 /// A registered demo issuer permitted to mint tickets.
 ///
 /// Seeds: `["issuer", issuer_authority]`.

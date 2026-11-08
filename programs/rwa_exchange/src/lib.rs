@@ -100,4 +100,36 @@ pub mod rwa_exchange {
     pub fn redeem_ticket(ctx: Context<RedeemTicket>) -> Result<()> {
         instructions::ticket::redeem_ticket(ctx)
     }
+
+    // ------------------------------------------------------------ ticketing
+
+    /// Escrow a ticket and create its listing.
+    pub fn list_ticket(
+        ctx: Context<ListTicket>,
+        price_lamports: u64,
+        expires_at: i64,
+    ) -> Result<()> {
+        instructions::listing::list_ticket(ctx, price_lamports, expires_at)
+    }
+
+    /// Cancel a ticket listing and return the ticket to the seller.
+    pub fn cancel_ticket_listing(ctx: Context<CancelTicketListing>) -> Result<()> {
+        instructions::listing::cancel_ticket_listing(ctx)
+    }
+
+    // -------------------------------------------------------- collectibles
+
+    /// Escrow a Metaplex Core asset with Core CPI and create its listing.
+    pub fn list_collectible(
+        ctx: Context<ListCollectible>,
+        price_lamports: u64,
+        expires_at: i64,
+    ) -> Result<()> {
+        instructions::collectible::list_collectible(ctx, price_lamports, expires_at)
+    }
+
+    /// Cancel a collectible listing and transfer the Core asset back to the seller.
+    pub fn cancel_collectible_listing(ctx: Context<CancelCollectibleListing>) -> Result<()> {
+        instructions::collectible::cancel_collectible_listing(ctx)
+    }
 }

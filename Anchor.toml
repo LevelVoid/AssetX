@@ -16,5 +16,10 @@ rwa_exchange = "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA"
 cluster = "localnet"
 wallet = "~/.config/solana/id.json"
 
+# Local tests fork Devnet so the real Metaplex Core program is available.
+[surfpool]
+online = true
+datasource_rpc_url = "https://api.devnet.solana.com"
+
 [scripts]
 test = "npx ts-mocha -t 1000000 tests/*.ts"
