@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "RWA Exchange",
+    "slug": "rwa-exchange",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "rwaexchange",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.rwaexchange.demo"
+    },
+    "android": {
+      "package": "com.rwaexchange.demo",
+      "adaptiveIcon": {
+        "backgroundColor": "#070b14",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": ["expo-dev-client"]
+  }
+}

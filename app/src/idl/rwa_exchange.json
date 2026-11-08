@@ -1,0 +1,1953 @@
+{
+  "address": "EosvnRWaZrdLWoSRCwp18QFMCL99GJJFTE1cEqhFJbuA",
+  "metadata": {
+    "name": "rwa_exchange",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "RWA Exchange: Solana secondary marketplace for event tickets and digital collectibles"
+  },
+  "instructions": [
+    {
+      "name": "buy_collectible",
+      "docs": [
+        "Buy a listed Metaplex Core collectible with native SOL settlement."
+      ],
+      "discriminator": [
+        226,
+        3,
+        84,
+        3,
+        114,
+        119,
+        153,
+        95
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset",
+          "writable": true
+        },
+        {
+          "name": "collection",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "seller",
+          "writable": true,
+          "relations": [
+            "listing"
+          ]
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "relations": [
+            "marketplace"
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "log_wrapper",
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "buy_ticket",
+      "docs": [
+        "Buy a listed ticket with native SOL settlement."
+      ],
+      "discriminator": [
+        11,
+        24,
+        17,
+        193,
+        168,
+        116,
+        164,
+        169
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticket",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  99,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ticket.issuer",
+                "account": "Ticket"
+              },
+              {
+                "kind": "account",
+                "path": "ticket.ticket_id",
+                "account": "Ticket"
+              }
+            ]
+          }
+        },
+        {
+          "name": "seller",
+          "writable": true,
+          "relations": [
+            "listing"
+          ]
+        },
+        {
+          "name": "treasury",
+          "writable": true,
+          "relations": [
+            "marketplace"
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ticket"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_collectible_listing",
+      "docs": [
+        "Cancel a collectible listing and transfer the Core asset back to the seller."
+      ],
+      "discriminator": [
+        41,
+        1,
+        137,
+        212,
+        43,
+        90,
+        102,
+        56
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "listing"
+          ]
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset",
+          "writable": true
+        },
+        {
+          "name": "collection",
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "log_wrapper",
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel_ticket_listing",
+      "docs": [
+        "Cancel a ticket listing and return the ticket to the seller."
+      ],
+      "discriminator": [
+        159,
+        26,
+        71,
+        105,
+        94,
+        95,
+        219,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "listing"
+          ]
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticket",
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ticket"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_ticket",
+      "docs": [
+        "Issue a ticket. Only an active registered issuer may call this."
+      ],
+      "discriminator": [
+        16,
+        178,
+        122,
+        25,
+        213,
+        85,
+        96,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "issuer"
+          ]
+        },
+        {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticket",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  99,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "issuer"
+              },
+              {
+                "kind": "arg",
+                "path": "ticket_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "ticket_id",
+          "type": "u64"
+        },
+        {
+          "name": "event_id",
+          "type": "u64"
+        },
+        {
+          "name": "event_name",
+          "type": "string"
+        },
+        {
+          "name": "seat_category",
+          "type": "string"
+        },
+        {
+          "name": "event_timestamp",
+          "type": "i64"
+        },
+        {
+          "name": "transfer_deadline",
+          "type": "i64"
+        },
+        {
+          "name": "max_resale_price",
+          "type": "u64"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "initialize_marketplace",
+      "docs": [
+        "Initialize the singleton marketplace configuration."
+      ],
+      "discriminator": [
+        47,
+        81,
+        64,
+        0,
+        96,
+        56,
+        105,
+        7
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "marketplace",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "treasury",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "list_collectible",
+      "docs": [
+        "Escrow a Metaplex Core asset with Core CPI and create its listing."
+      ],
+      "discriminator": [
+        63,
+        166,
+        255,
+        182,
+        97,
+        122,
+        115,
+        157
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "asset",
+          "writable": true
+        },
+        {
+          "name": "collection",
+          "docs": [
+            "validates the asset's collection membership itself."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "asset"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mpl_core_program",
+          "address": "CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"
+        },
+        {
+          "name": "log_wrapper",
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "expires_at",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "list_ticket",
+      "docs": [
+        "Escrow a ticket and create its listing."
+      ],
+      "discriminator": [
+        11,
+        213,
+        240,
+        45,
+        246,
+        35,
+        44,
+        162
+      ],
+      "accounts": [
+        {
+          "name": "seller",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "ticket",
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "ticket"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "price_lamports",
+          "type": "u64"
+        },
+        {
+          "name": "expires_at",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "redeem_ticket",
+      "docs": [
+        "Mark a ticket as redeemed. Only the issuing authority may call this."
+      ],
+      "discriminator": [
+        129,
+        120,
+        104,
+        224,
+        155,
+        25,
+        22,
+        192
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "issuer"
+          ]
+        },
+        {
+          "name": "issuer",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "authority"
+              }
+            ]
+          },
+          "relations": [
+            "ticket"
+          ]
+        },
+        {
+          "name": "ticket",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  105,
+                  99,
+                  107,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "issuer"
+              },
+              {
+                "kind": "account",
+                "path": "ticket.ticket_id",
+                "account": "Ticket"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "register_issuer",
+      "docs": [
+        "Register a demo issuer. Marketplace authority only."
+      ],
+      "discriminator": [
+        145,
+        117,
+        52,
+        59,
+        189,
+        27,
+        127,
+        18
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "marketplace"
+          ]
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuer_authority"
+        },
+        {
+          "name": "issuer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "issuer_authority"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "metadata_uri",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "set_issuer_active",
+      "docs": [
+        "Activate or deactivate an issuer. Marketplace authority only."
+      ],
+      "discriminator": [
+        59,
+        193,
+        198,
+        208,
+        54,
+        149,
+        1,
+        64
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "marketplace"
+          ]
+        },
+        {
+          "name": "marketplace",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "issuer",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  115,
+                  115,
+                  117,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "issuer.authority",
+                "account": "Issuer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "active",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "update_marketplace",
+      "docs": [
+        "Update fee, treasury and pause state. Marketplace authority only."
+      ],
+      "discriminator": [
+        72,
+        12,
+        22,
+        71,
+        86,
+        113,
+        79,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "marketplace"
+          ]
+        },
+        {
+          "name": "marketplace",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  97,
+                  114,
+                  107,
+                  101,
+                  116,
+                  112,
+                  108,
+                  97,
+                  99,
+                  101
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "fee_bps",
+          "type": "u16"
+        },
+        {
+          "name": "treasury",
+          "type": "pubkey"
+        },
+        {
+          "name": "paused",
+          "type": "bool"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Issuer",
+      "discriminator": [
+        216,
+        19,
+        83,
+        230,
+        108,
+        53,
+        80,
+        14
+      ]
+    },
+    {
+      "name": "Listing",
+      "discriminator": [
+        218,
+        32,
+        50,
+        73,
+        43,
+        134,
+        26,
+        58
+      ]
+    },
+    {
+      "name": "MarketplaceConfig",
+      "discriminator": [
+        169,
+        22,
+        247,
+        131,
+        182,
+        200,
+        81,
+        124
+      ]
+    },
+    {
+      "name": "Ticket",
+      "discriminator": [
+        41,
+        228,
+        24,
+        165,
+        78,
+        90,
+        235,
+        200
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AssetSold",
+      "discriminator": [
+        172,
+        149,
+        146,
+        224,
+        79,
+        153,
+        190,
+        154
+      ]
+    },
+    {
+      "name": "IssuerRegistered",
+      "discriminator": [
+        98,
+        108,
+        156,
+        224,
+        9,
+        0,
+        195,
+        21
+      ]
+    },
+    {
+      "name": "IssuerStatusChanged",
+      "discriminator": [
+        130,
+        171,
+        24,
+        46,
+        255,
+        61,
+        237,
+        157
+      ]
+    },
+    {
+      "name": "ListingCancelled",
+      "discriminator": [
+        11,
+        46,
+        163,
+        10,
+        103,
+        80,
+        139,
+        194
+      ]
+    },
+    {
+      "name": "ListingCreated",
+      "discriminator": [
+        94,
+        164,
+        167,
+        255,
+        246,
+        186,
+        12,
+        96
+      ]
+    },
+    {
+      "name": "MarketplaceInitialized",
+      "discriminator": [
+        22,
+        167,
+        42,
+        34,
+        172,
+        55,
+        155,
+        14
+      ]
+    },
+    {
+      "name": "MarketplaceUpdated",
+      "discriminator": [
+        76,
+        144,
+        13,
+        244,
+        21,
+        28,
+        23,
+        203
+      ]
+    },
+    {
+      "name": "TicketCreated",
+      "discriminator": [
+        122,
+        222,
+        128,
+        213,
+        63,
+        50,
+        51,
+        110
+      ]
+    },
+    {
+      "name": "TicketRedeemed",
+      "discriminator": [
+        251,
+        171,
+        7,
+        57,
+        152,
+        25,
+        168,
+        38
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "FeeTooHigh",
+      "msg": "Marketplace fee exceeds the maximum allowed basis points"
+    },
+    {
+      "code": 6001,
+      "name": "MarketplacePaused",
+      "msg": "Marketplace is paused"
+    },
+    {
+      "code": 6002,
+      "name": "IssuerInactive",
+      "msg": "Issuer is not active"
+    },
+    {
+      "code": 6003,
+      "name": "IssuerAuthorityMismatch",
+      "msg": "Issuer authority does not match the issuer account"
+    },
+    {
+      "code": 6004,
+      "name": "EmptyName",
+      "msg": "Name must not be empty"
+    },
+    {
+      "code": 6005,
+      "name": "NameTooLong",
+      "msg": "Name is longer than the allowed maximum"
+    },
+    {
+      "code": 6006,
+      "name": "UriTooLong",
+      "msg": "Metadata URI is longer than the allowed maximum"
+    },
+    {
+      "code": 6007,
+      "name": "TicketRedeemed",
+      "msg": "Ticket has already been redeemed"
+    },
+    {
+      "code": 6008,
+      "name": "TransferWindowExpired",
+      "msg": "Ticket transfer window has expired"
+    },
+    {
+      "code": 6009,
+      "name": "EventInThePast",
+      "msg": "Event must be in the future"
+    },
+    {
+      "code": 6010,
+      "name": "InvalidTransferDeadline",
+      "msg": "Transfer deadline must be in the future and no later than the event"
+    },
+    {
+      "code": 6011,
+      "name": "InvalidPrice",
+      "msg": "Resale price must be greater than zero"
+    },
+    {
+      "code": 6012,
+      "name": "ResalePriceAboveCap",
+      "msg": "Resale price exceeds the issuer cap"
+    },
+    {
+      "code": 6013,
+      "name": "InvalidExpiry",
+      "msg": "Listing expiry must be in the future"
+    },
+    {
+      "code": 6014,
+      "name": "ListingNotActive",
+      "msg": "Listing is not active"
+    },
+    {
+      "code": 6015,
+      "name": "ListingExpired",
+      "msg": "Listing has expired"
+    },
+    {
+      "code": 6016,
+      "name": "AssetTypeMismatch",
+      "msg": "Asset type does not match the listing"
+    },
+    {
+      "code": 6017,
+      "name": "SelfPurchase",
+      "msg": "Seller cannot buy their own listing"
+    },
+    {
+      "code": 6018,
+      "name": "AssetNotEscrowed",
+      "msg": "Underlying asset is not held in marketplace escrow"
+    },
+    {
+      "code": 6019,
+      "name": "AssetMismatch",
+      "msg": "Asset account does not match the listing"
+    },
+    {
+      "code": 6020,
+      "name": "CoreOwnerMismatch",
+      "msg": "Metaplex Core asset is not owned by the expected account"
+    },
+    {
+      "code": 6021,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidTicketOwner",
+      "msg": "Ticket owner must be a valid public key"
+    },
+    {
+      "code": 6023,
+      "name": "NotAssetOwner",
+      "msg": "Signer does not own the asset being listed"
+    },
+    {
+      "code": 6024,
+      "name": "InvalidCoreAsset",
+      "msg": "Account is not a valid Metaplex Core asset"
+    },
+    {
+      "code": 6025,
+      "name": "CoreEscrowMismatch",
+      "msg": "Asset is not a Metaplex Core asset owned by the marketplace escrow"
+    }
+  ],
+  "types": [
+    {
+      "name": "AssetSold",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_type",
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "price_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "fee_lamports",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AssetType",
+      "docs": [
+        "Discriminates the two supported asset adapters behind one listing schema."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Ticket"
+          },
+          {
+            "name": "Collectible"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Issuer",
+      "docs": [
+        "A registered demo issuer permitted to mint tickets.",
+        "",
+        "Seeds: `[\"issuer\", issuer_authority]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "The key allowed to sign ticket issuance and redemption."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "name",
+            "docs": [
+              "Display name of the issuer."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "metadata_uri",
+            "docs": [
+              "Off-chain metadata URI (logo / description)."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "active",
+            "docs": [
+              "Issuers that are not active cannot issue or redeem tickets."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IssuerRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IssuerStatusChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Listing",
+      "docs": [
+        "Shared listing schema for both asset adapters.",
+        "",
+        "Seeds: `[\"listing\", asset]`. The deterministic address guarantees at most one active",
+        "listing per asset, and the account is closed when the listing ends so the same PDA can be",
+        "reused by a later listing of the same asset."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset",
+            "docs": [
+              "Escrowed asset: a [`Ticket`] PDA or a Metaplex Core asset address."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_type",
+            "docs": [
+              "Which adapter governs this asset."
+            ],
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "seller",
+            "docs": [
+              "Seller and sole authority allowed to cancel."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "price_lamports",
+            "docs": [
+              "Fixed asking price in lamports."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Listing creation time, unix seconds."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "expires_at",
+            "docs": [
+              "Listing expiry, unix seconds."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "status",
+            "docs": [
+              "Current listing status."
+            ],
+            "type": {
+              "defined": {
+                "name": "ListingStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingCancelled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_type",
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_type",
+            "type": {
+              "defined": {
+                "name": "AssetType"
+              }
+            }
+          },
+          {
+            "name": "seller",
+            "type": "pubkey"
+          },
+          {
+            "name": "price_lamports",
+            "type": "u64"
+          },
+          {
+            "name": "expires_at",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingStatus",
+      "docs": [
+        "Lifecycle of a listing. Listing accounts are closed on sale or cancellation, so an",
+        "account that still exists should always be [`ListingStatus::Active`]."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Active"
+          },
+          {
+            "name": "Sold"
+          },
+          {
+            "name": "Cancelled"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketplaceConfig",
+      "docs": [
+        "Singleton marketplace configuration and escrow authority.",
+        "",
+        "Seeds: `[\"marketplace\"]`. The account is deliberately read-only in listing and",
+        "purchase instructions, so no global writable account serializes the marketplace."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Administrator allowed to update config, register issuers and pause the market."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Receives marketplace fees."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "docs": [
+              "Marketplace fee in basis points, capped at [`crate::constants::MAX_FEE_BPS`]."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "paused",
+            "docs": [
+              "When true, new listings and purchases are rejected."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketplaceInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MarketplaceUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "paused",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Ticket",
+      "docs": [
+        "Anchor-managed event ticket. This account is the source of truth for ownership",
+        "and redemption state; no external program or metadata account can override it.",
+        "",
+        "Seeds: `[\"ticket\", issuer, ticket_id]`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ticket_id",
+            "docs": [
+              "Issuer-assigned unique identifier, scoped to the issuer."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "issuer",
+            "docs": [
+              "Issuer PDA that minted the ticket."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "docs": [
+              "Current owner; equals the marketplace config PDA while the ticket is escrowed."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "event_id",
+            "docs": [
+              "Identifier of the underlying (demo) event."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "event_name",
+            "docs": [
+              "Human readable event name."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "seat_category",
+            "docs": [
+              "Seat or ticket category (for example \"General Stand\")."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "event_timestamp",
+            "docs": [
+              "Event start time, unix seconds."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "transfer_deadline",
+            "docs": [
+              "Last unix timestamp at which the ticket may be transferred."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "max_resale_price",
+            "docs": [
+              "Issuer-configured resale ceiling in lamports."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "redeemed",
+            "docs": [
+              "Set by the issuer once the ticket has been used / invalidated."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "metadata_uri",
+            "docs": [
+              "Off-chain metadata URI for display assets."
+            ],
+            "type": "string"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TicketCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ticket",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "ticket_id",
+            "type": "u64"
+          },
+          {
+            "name": "event_id",
+            "type": "u64"
+          },
+          {
+            "name": "event_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "transfer_deadline",
+            "type": "i64"
+          },
+          {
+            "name": "max_resale_price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "TicketRedeemed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "ticket",
+            "type": "pubkey"
+          },
+          {
+            "name": "issuer",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    }
+  ]
+}
