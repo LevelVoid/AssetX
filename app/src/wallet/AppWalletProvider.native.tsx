@@ -2,8 +2,8 @@ import {
   MobileWalletProvider,
   useMobileWallet,
 } from "@wallet-ui/react-native-web3js";
-import { Transaction } from "@solana/web3.js";
-import React, { useCallback, useState, type ReactNode } from "react";
+import { PublicKey, Transaction } from "@solana/web3.js";
+import React, { useCallback, useMemo, useState, type ReactNode } from "react";
 
 import { APP_IDENTITY, RPC_URL } from "../config";
 import { useAppWalletValue, WalletValueProvider } from "./context";
@@ -31,6 +31,20 @@ export function AppWalletProvider({ children }: { children: ReactNode }) {
 function MobileWalletBridge({ children }: { children: ReactNode }) {
   const wallet = useMobileWallet();
   const [connecting, setConnecting] = useState(false);
+
+  // @wallet-ui/react-native-web3js 4.4.1 rehydrates the cached authorization with
+  // `address` left as a base58 string (its cache reviver only converts `publicKey`).
+  // Normalize it back to a PublicKey before exposing it to the app.
+  const publicKey = useMemo(() => {
+    const address = wallet.account?.address as unknown;
+    if (!address) return null;
+    if (address instanceof PublicKey) return address;
+    try {
+      return new PublicKey(address as string);
+    } catch {
+      return null;
+    }
+  }, [wallet.account?.address]);
 
   const connect = useCallback(async () => {
     setConnecting(true);
@@ -63,8 +77,8 @@ function MobileWalletBridge({ children }: { children: ReactNode }) {
 
   const value = useAppWalletValue({
     connection: wallet.connection,
-    publicKey: wallet.account?.address ?? null,
-    connected: Boolean(wallet.account),
+    publicKey,
+    connected: Boolean(publicKey),
     connecting,
     connect,
     disconnect,
