@@ -24,11 +24,11 @@ export function describeError(error: unknown): string {
   }
 
   if (
-    /user rejected|rejected the request|declined|cancelled by user/i.test(
+    /user rejected|rejected the request|declined|cancelled by user|operation cancelled|cancellationexception/i.test(
       message
     )
   ) {
-    return "Request rejected in your wallet.";
+    return "Request cancelled in your wallet.";
   }
 
   if (/insufficient funds|insufficient lamports/i.test(message)) {

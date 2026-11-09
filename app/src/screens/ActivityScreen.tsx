@@ -38,6 +38,25 @@ const formatWhen = (blockTime?: number): string => {
   });
 };
 
+const ACTIVITY_CACHE_MS = 60_000;
+let activityCache: { endpoint: string; at: number; items: ActivityItem[] } | null =
+  null;
+
+const readActivityCache = (endpoint: string): ActivityItem[] | null => {
+  if (
+    !activityCache ||
+    activityCache.endpoint !== endpoint ||
+    Date.now() - activityCache.at > ACTIVITY_CACHE_MS
+  ) {
+    return null;
+  }
+  return activityCache.items;
+};
+
+const writeActivityCache = (endpoint: string, items: ActivityItem[]) => {
+  activityCache = { endpoint, at: Date.now(), items };
+};
+
 export function ActivityScreen() {
   const { connection, program } = useAppWallet();
   const [items, setItems] = useState<ActivityItem[]>([]);
@@ -50,7 +69,15 @@ export function ActivityScreen() {
       if (isRefresh) setRefreshing(true);
       setError(null);
       try {
-        setItems(await fetchActivity(connection, program, 25));
+        const cached = readActivityCache(connection.rpcEndpoint);
+        if (!isRefresh && cached) {
+          setItems(cached);
+          setLoading(false);
+          return;
+        }
+        const next = await fetchActivity(connection, program, 10);
+        writeActivityCache(connection.rpcEndpoint, next);
+        setItems(next);
       } catch (cause) {
         setError(describeError(cause));
       } finally {
