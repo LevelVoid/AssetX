@@ -69,16 +69,42 @@ export async function fetchActiveListings(
   program: MarketplaceProgram
 ): Promise<Array<AccountWithPubkey<ListingAccount>>> {
   try {
+    console.log('[fetchActiveListings] Starting...');
     const now = Math.floor(Date.now() / 1000);
+    console.log('[fetchActiveListings] Current time:', now);
+    
+    console.log('[fetchActiveListings] Calling program.account.listing.all()');
     const all = (await (program.account as any).listing.all()) as Array<
       AccountWithPubkey<ListingAccount>
     >;
-    return all.filter(
-      ({ account }) =>
-        "active" in account.status && account.expiresAt.toNumber() > now
+    console.log('[fetchActiveListings] Got listings:', all.length);
+    
+    console.log('[fetchActiveListings] Filtering active listings...');
+    const filtered = all.filter(
+      ({ account }) => {
+        console.log('[fetchActiveListings] Checking account:', account);
+        const isActive = "active" in account.status;
+        console.log('[fetchActiveListings] Is active:', isActive);
+        if (!isActive) return false;
+        
+        const expiresAt = account.expiresAt;
+        console.log('[fetchActiveListings] expiresAt type:', typeof expiresAt, expiresAt);
+        
+        if (!expiresAt || typeof expiresAt.toNumber !== 'function') {
+          console.error('[fetchActiveListings] expiresAt is invalid:', expiresAt);
+          return false;
+        }
+        
+        const expiresAtNumber = expiresAt.toNumber();
+        console.log('[fetchActiveListings] Expires at:', expiresAtNumber, 'now:', now);
+        return expiresAtNumber > now;
+      }
     );
+    console.log('[fetchActiveListings] Filtered count:', filtered.length);
+    return filtered;
   } catch (error) {
     console.error('fetchActiveListings error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'no stack');
     throw error;
   }
 }
