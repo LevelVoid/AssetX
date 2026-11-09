@@ -1,8 +1,8 @@
 {
   "name": "Championship Final \u2014 Limited Edition",
   "description": "Limited-edition demo collectible commemorating a fictional championship final. Minted as a real Metaplex Core asset on Solana Devnet.",
-  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/championship-final.svg",
-  "external_url": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/app",
+  "image": "https://raw.githubusercontent.com/LevelVoid/AssetX/main/assets/images/championship-final.svg",
+  "external_url": "https://raw.githubusercontent.com/LevelVoid/AssetX/main/app",
   "attributes": [
     {
       "trait_type": "Category",

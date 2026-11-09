@@ -6,7 +6,7 @@
  */
 
 export const DEFAULT_METADATA_BASE_URL =
-  "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/metadata";
+  "https://raw.githubusercontent.com/LevelVoid/AssetX/main/assets/metadata";
 
 export const metadataBaseUrl = () =>
   process.env.METADATA_BASE_URL ?? DEFAULT_METADATA_BASE_URL;

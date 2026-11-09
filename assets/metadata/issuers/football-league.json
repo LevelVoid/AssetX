@@ -1,7 +1,7 @@
 {
   "name": "Demo Football League",
   "description": "Fictional football organiser used to issue demo tickets and collectibles on Solana Devnet.",
-  "image": "https://raw.githubusercontent.com/pradeepbiswas/AssetX/main/assets/images/placeholder-issuer.svg",
+  "image": "https://raw.githubusercontent.com/LevelVoid/AssetX/main/assets/images/placeholder-issuer.svg",
   "attributes": [
     {
       "trait_type": "Category",
